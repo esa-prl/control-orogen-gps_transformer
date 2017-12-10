@@ -1,6 +1,5 @@
 <package>
   <description brief="Component for transforming the GPS pose to robot's relative frame">
-  
   </description>
   <author>Dimitris Geromichalos/geromidg@gmail.com</author>
   <license></license>
@@ -9,4 +8,5 @@
   <depend package="base/cmake" />
   <depend package="base/types" />
   <depend package="base/orogen/types" />
+  <depend package="drivers/orogen/aggregator" />
 </package>

@@ -1,9 +1,12 @@
-name "gps_transformer"
+name 'gps_transformer'
 
-import_types_from "base"
+import_types_from 'base'
 
-task_context "Task" do
+task_context 'Task' do
     needs_configuration
+
+    property('yawOffset', 'double', Math::PI / 2).
+        doc 'Offset in yaw of the pose'
 
     input_port('inputPose', '/base/samples/RigidBodyState').
         doc 'Pose in GPS frame, before transformation'
@@ -11,6 +14,9 @@ task_context "Task" do
     output_port('outputPose', '/base/samples/RigidBodyState').
         doc 'Pose in robot frame, after transformation'
 
-    port_driven 'inputPose'
+    stream_aligner do
+        align_port 'inputPose'
+        max_latency 0.0
+    end
 end
 
