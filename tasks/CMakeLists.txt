@@ -1,12 +1,9 @@
-# Generated from orogen/lib/orogen/templates/tasks/CMakeLists.txt
-
 include(gps_transformerTaskLib)
+
 ADD_LIBRARY(${GPS_TRANSFORMER_TASKLIB_NAME} SHARED 
     ${GPS_TRANSFORMER_TASKLIB_SOURCES})
 add_dependencies(${GPS_TRANSFORMER_TASKLIB_NAME}
     regen-typekit)
-
-
 
 TARGET_LINK_LIBRARIES(${GPS_TRANSFORMER_TASKLIB_NAME}
     ${OrocosRTT_LIBRARIES}
