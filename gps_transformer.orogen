@@ -11,6 +11,9 @@ task_context 'Task' do
     input_port('inputPose', '/base/samples/RigidBodyState').
         doc 'Pose in GPS frame, before transformation'
 
+    output_port('outputDeltaPose', '/base/samples/RigidBodyState').
+        doc 'Delta pose in robot frame, after transformation'
+
     output_port('outputPose', '/base/samples/RigidBodyState').
         doc 'Pose in robot frame, after transformation'
 

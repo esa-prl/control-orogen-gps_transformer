@@ -4,33 +4,42 @@
 
 namespace gps_transformer {
 
-using Pose = base::samples::RigidBodyState;
+using Pose = Eigen::Affine3d;
+using BasePose = base::samples::RigidBodyState;
 
 class Task : public TaskBase {
   public:
     explicit Task(std::string const& name = "gps_transformer::Task")
-            : TaskBase(name) {}
+            : TaskBase(name),
+              lastPose_(Pose::Identity()) {}
 
   protected:
     void inputPoseTransformerCallback(
             const base::Time& timestamp,
-            const Pose& inputPose) override {
-        if (!initialPose_.hasValidPosition())
-            initialPose_ = inputPose;
+            const BasePose& gpsBasePose) override {
+        if (!initialBasePose_.hasValidPosition())
+            initialBasePose_ = gpsBasePose;
 
-        Pose outputPose = inputPose;
-        outputPose.position = inputPose.position - initialPose_.position;
+        BasePose diffPose = gpsBasePose;
+        diffPose.position -= initialBasePose_.position;
 
-        Eigen::Affine3d tf = outputPose.getTransform();
-        tf.prerotate(Eigen::AngleAxisd(_yawOffset.rvalue(),
-                Eigen::Vector3d::UnitZ()));
-        outputPose.setTransform(tf);
+        Pose yawRot, pose, deltaPose;
+        yawRot = Eigen::AngleAxisd(_yawOffset.get(), Eigen::Vector3d::UnitZ());
+        pose = yawRot * diffPose.getTransform();
+        deltaPose = lastPose_.inverse() * pose;
+        lastPose_ = pose;
 
-        _outputPose.write(outputPose);
+        BasePose outputBaseDeltaPose, outputBasePose;
+        outputBaseDeltaPose.setTransform(deltaPose);
+        outputBasePose.setTransform(pose);
+
+        _outputDeltaPose.write(outputBaseDeltaPose);
+        _outputPose.write(outputBasePose);
     }
 
   protected:
-    Pose initialPose_;
+    BasePose initialBasePose_;
+    Pose lastPose_;
 };
 
 }  // namespace gps_transformer
