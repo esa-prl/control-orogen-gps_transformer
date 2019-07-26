@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gps_transformer/TaskBase.hpp"
+#include <random>
 
 namespace gps_transformer {
 
@@ -29,17 +30,26 @@ class Task : public TaskBase {
         deltaPose = lastPose_.inverse() * pose;
         lastPose_ = pose;
 
+        std::cout << "Delta Pose Translation (Ground Truth): " << std::endl << deltaPose.translation() << std::endl;
+        //Add random noise to the pose that represents a drift of 1.5% of the traversed distance
+        std::uniform_real_distribution<> distribution(-0.015, 0.015);
+        double drift = distribution(generator_);
+        pose.translation() += drift*deltaPose.translation();
+        std::cout << "Delta Pose Translation (with drift): " << drift << std::endl << deltaPose.translation() + drift*deltaPose.translation() << std::endl;
+
         BasePose outputBaseDeltaPose, outputBasePose;
         outputBaseDeltaPose.setTransform(deltaPose);
         outputBasePose.setTransform(pose);
 
         _outputDeltaPose.write(outputBaseDeltaPose);
         _outputPose.write(outputBasePose);
-    }
+
+   }
 
   protected:
     BasePose initialBasePose_;
     Pose lastPose_;
+    std::default_random_engine generator_;
 };
 
 }  // namespace gps_transformer
