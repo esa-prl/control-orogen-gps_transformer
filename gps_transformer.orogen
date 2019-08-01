@@ -18,6 +18,22 @@ task_context 'Task' do
     output_port('outputPose', '/base/samples/RigidBodyState').
         doc 'Pose in robot frame, after transformation'
 
+    output_port('outputDriftPose', '/base/samples/RigidBodyState').
+        doc 'Pose in robot frame, after transformation with additional drift to simulate odometry estimation'
+
+    output_port('traversedDistance', 'double').
+        doc 'Total acumulated traversed distance'
+
+    output_port('accumulatedDeltaYaw', 'double').
+        doc 'Total acumulated delta Yaw during the traverse'
+
+    output_port('absoluteDeltaYaw', 'double').
+        doc 'Total acumulated delta Yaw during the traverse'
+
+    output_port('odometryError', 'double').
+        doc 'Absolute odometry (generated) pose error (norm of XY error vector)'
+
+
     transformer do
         align_port 'inputPose'
         max_latency 0
