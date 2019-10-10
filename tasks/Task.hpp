@@ -30,7 +30,7 @@ class Task : public TaskBase {
         BasePose diffPose = gpsBasePose;
         diffPose.position -= initialBasePose_.position;
 
-        Pose yawRot, pose, deltaPose, driftPose, worldPose;
+        Pose yawRot, pose, deltaPose, driftPose;
         yawRot = Eigen::AngleAxisd(_yawOffset.get(), Eigen::Vector3d::UnitZ());
         pose = yawRot * diffPose.getTransform();
         deltaPose = lastPose_.inverse() * pose;
@@ -40,8 +40,8 @@ class Task : public TaskBase {
         if (first) {
             first = false;
         }
-        else { //Add random noise to the pose that represents a drift of 1.5% of the traversed distance
-            std::uniform_real_distribution<> distribution(0.005, 0.025);
+        else { //Add random noise to the pose that represents a drift of 1% of the traversed distance
+            std::uniform_real_distribution<> distribution(0.00, 0.02);
             std::uniform_real_distribution<> distribution2(-1, 1);
             double drift = distribution(generator_);
             double sign = distribution2(generator_);
@@ -66,13 +66,13 @@ class Task : public TaskBase {
 //            deltaPose = yawRot * deltaPose;
         }
         lastDriftPose_ = driftPose;
-        worldPose = initialBasePose_.getTransform()*driftPose;
 
         BasePose outputBaseDeltaPose, outputBasePose, outputDriftBasePose, worldDriftBasePose;
         outputBaseDeltaPose.setTransform(deltaPose);
         outputBasePose.setTransform(pose);
         outputDriftBasePose.setTransform(driftPose);
-        worldDriftBasePose.setTransform(worldPose);
+        worldDriftBasePose.position = initialBasePose_.position + outputDriftBasePose.position;
+        worldDriftBasePose.orientation = outputDriftBasePose.orientation;
 
         _outputDeltaPose.write(outputBaseDeltaPose);
         _outputPose.write(outputBasePose);
