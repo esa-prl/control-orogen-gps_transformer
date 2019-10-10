@@ -21,6 +21,9 @@ task_context 'Task' do
     output_port('outputDriftPose', '/base/samples/RigidBodyState').
         doc 'Pose in robot frame, after transformation with additional drift to simulate odometry estimation'
 
+    output_port('worldDriftPose', '/base/samples/RigidBodyState').
+        doc 'Pose in world frame, after transformation with additional drift to simulate odometry estimation'
+
     output_port('traversedDistance', 'double').
         doc 'Total acumulated traversed distance'
 

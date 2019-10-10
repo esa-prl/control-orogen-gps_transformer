@@ -30,7 +30,7 @@ class Task : public TaskBase {
         BasePose diffPose = gpsBasePose;
         diffPose.position -= initialBasePose_.position;
 
-        Pose yawRot, pose, deltaPose, driftPose;
+        Pose yawRot, pose, deltaPose, driftPose, worldPose;
         yawRot = Eigen::AngleAxisd(_yawOffset.get(), Eigen::Vector3d::UnitZ());
         pose = yawRot * diffPose.getTransform();
         deltaPose = lastPose_.inverse() * pose;
@@ -66,15 +66,18 @@ class Task : public TaskBase {
 //            deltaPose = yawRot * deltaPose;
         }
         lastDriftPose_ = driftPose;
+        worldPose = initialBasePose_.getTransform()*driftPose;
 
-        BasePose outputBaseDeltaPose, outputBasePose, outputDriftBasePose;
+        BasePose outputBaseDeltaPose, outputBasePose, outputDriftBasePose, worldDriftBasePose;
         outputBaseDeltaPose.setTransform(deltaPose);
         outputBasePose.setTransform(pose);
         outputDriftBasePose.setTransform(driftPose);
+        worldDriftBasePose.setTransform(worldPose);
 
         _outputDeltaPose.write(outputBaseDeltaPose);
         _outputPose.write(outputBasePose);
         _outputDriftPose.write(outputDriftBasePose);
+        _worldDriftPose.write(worldDriftBasePose);
 
         const Eigen::Vector3d deltaXYZ = deltaPose.translation();
         const Eigen::Vector2d deltaXY = deltaXYZ.head(2);
