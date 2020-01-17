@@ -70,6 +70,7 @@ class Task : public TaskBase {
         BasePose outputBaseDeltaPose, outputBasePose, outputDriftBasePose, worldDriftBasePose;
         outputBaseDeltaPose.setTransform(deltaPose);
         outputBasePose.setTransform(pose);
+        outputBasePose.time = gpsBasePose.time;
         outputDriftBasePose.setTransform(driftPose);
         worldDriftBasePose.position = initialBasePose_.position + outputDriftBasePose.position;
         worldDriftBasePose.orientation = outputDriftBasePose.orientation;
