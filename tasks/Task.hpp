@@ -47,23 +47,17 @@ class Task : public TaskBase {
             double sign = distribution2(generator_);
             sign = sign > 0 ? 1.0 : -1.0;
             drift = sign*drift;
-//            std::cout << "Drift: " << drift << std::endl;
             driftPose.translation() += driftPose.linear() * (drift*deltaPose.translation());
-//            deltaPose.translation() += drift*deltaPose.translation();
             double deltaYaw;
             BasePose baseDeltaPose;
             baseDeltaPose.setTransform(deltaPose);
             deltaYaw=baseDeltaPose.getYaw();
-//            std::cout << "DeltaYaw: " << deltaYaw << std::endl;
             accumulatedDeltaYaw_ += fabs(deltaYaw)*(180.0/3.141592);
             absoluteDeltaYaw_ += deltaYaw*(180.0/3.141592);
-//            std::cout << "TotalDeltaYaw: " << totalDeltaYaw_ << std::endl;
             _accumulatedDeltaYaw.write(accumulatedDeltaYaw_);
             _absoluteDeltaYaw.write(absoluteDeltaYaw_);
             yawRot = Eigen::AngleAxisd((15*drift*deltaYaw), Eigen::Vector3d::UnitZ());
-//            std::cout << "DriftDeltaYaw: " << drift*deltaYaw << std::endl;
             driftPose = driftPose * yawRot;
-//            deltaPose = yawRot * deltaPose;
         }
         lastDriftPose_ = driftPose;
 
@@ -86,7 +80,6 @@ class Task : public TaskBase {
         _traversedDistance.write(traversedDistance_);
         double estimationError = sqrt(pow(outputDriftBasePose.position.x()-outputBasePose.position.x(),2) + pow(outputDriftBasePose.position.y()-outputBasePose.position.y(),2));
         _odometryError.write(estimationError);
-
    }
 
   protected:
