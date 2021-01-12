@@ -41,7 +41,7 @@ class Task : public TaskBase {
             first = false;
         }
         else { //Add random noise to the pose that represents a drift of 1% of the traversed distance
-            std::uniform_real_distribution<> distribution(0.00, 0.02);
+            std::uniform_real_distribution<> distribution(0.00, _maxDriftMagnitude.get());
             std::uniform_real_distribution<> distribution2(-1, 1);
             double drift = distribution(generator_);
             double sign = distribution2(generator_);

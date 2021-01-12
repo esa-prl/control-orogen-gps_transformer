@@ -8,6 +8,9 @@ task_context 'Task' do
     property('yawOffset', 'double', 0.0).
         doc 'Offset in yaw of the pose'
 
+    property('maxDriftMagnitude', 'double', 0.02).
+        doc 'Upper bound of uniform distribution for drift in pose'
+
     input_port('inputPose', '/base/samples/RigidBodyState').
         doc 'Pose in GPS frame, before transformation'
 
